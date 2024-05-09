@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/auth.service";
+import { AuthService } from "_app/services/auth.service";
 import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import requiredField from "_app/utils/requiredField";
 import { BadRequestError } from "_app/errors";
@@ -42,17 +42,13 @@ export class AuthController {
       );
     }
 
-    try {
-      const newUser = await this.authService.register({
-        username,
-        email,
-        password,
-        confirmPassword,
-      });
-      const userToReturn = newUser.omitPrivate();
-      res.status(201).json({ user: userToReturn });
-    } catch (error) {
-      res.status(400).send({ error: error.message });
-    }
+    const newUser = await this.authService.register({
+      username,
+      email,
+      password,
+      confirmPassword,
+    });
+    const userToReturn = newUser.omitPrivate();
+    res.status(201).json({ user: userToReturn });
   }
 }

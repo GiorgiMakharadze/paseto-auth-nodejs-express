@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "sourceMap": true,
     "target": "es2017",
     "outDir": "./build",
