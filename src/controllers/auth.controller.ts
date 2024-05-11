@@ -4,6 +4,7 @@ import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import requiredField from "_app/utils/requiredField";
 import { BadRequestError } from "_app/errors";
 import { RegisterUserDto } from "_app/dtos/user.dto";
+import { StatusCodes } from "http-status-codes";
 
 export class AuthController {
   private authService: AuthService;
@@ -49,6 +50,23 @@ export class AuthController {
       confirmPassword,
     });
     const userToReturn = newUser.omitPrivate();
-    res.status(201).json({ user: userToReturn });
+    res.status(StatusCodes.CREATED).json({ user: userToReturn });
+  }
+
+  public async loginUser(req: Request, res: Response) {
+    const { email, password } = req.body;
+    const requiredFields = ["email", "password"];
+    requiredField(req, res, requiredFields);
+
+    const { user, token, refreshToken } = await this.authService.login(
+      email,
+      password
+    );
+
+    res.status(StatusCodes.OK).json({
+      user,
+      token,
+      refreshToken,
+    });
   }
 }

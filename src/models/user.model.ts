@@ -46,6 +46,18 @@ export const userSchema = new mongoose.Schema(
       enum: USER_ROLES,
       default: "user",
     },
+    refreshToken: {
+      type: String,
+      default: null,
+    },
+    forgotPasswordToken: {
+      type: String,
+      default: null,
+    },
+    forgotPasswordExpire: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
