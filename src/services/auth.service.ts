@@ -1,13 +1,17 @@
 import { RegisterUserDto } from "_app/dtos/user.dto";
 import {
   BadRequestError,
+  InternalServerError,
   NotFoundError,
   UnauthenticatedError,
 } from "_app/errors";
 import userModel from "_app/models/user.model";
+import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import { privateKeyPEM } from "_app/utils/keyManager";
 import generateRefreshToken from "_app/utils/refreshToken";
+import sendEmail from "_app/utils/sendEmail";
 import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 import { V4 as paseto } from "paseto";
 import validator from "validator";
 
@@ -61,5 +65,78 @@ export class AuthService {
       token,
       refreshToken,
     };
+  }
+
+  public async forgotPassword(email: string) {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
+
+    const forgotToken = crypto.randomBytes(20).toString("hex");
+    const hashedResetToken = crypto
+      .createHash("sha256")
+      .update(forgotToken)
+      .digest("hex");
+    const forgotTokenExpire = Date.now() + 3600000;
+
+    user.forgotPasswordToken = hashedResetToken;
+    user.forgotPasswordExpire = forgotTokenExpire;
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${forgotToken}`;
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: "Password Reset Request",
+        text: `To reset your password, please click on the following link: ${resetUrl}`,
+      });
+    } catch (error) {
+      throw new InternalServerError(
+        "Failed to send email. Please try again later."
+      );
+    }
+    return "Email sent. Please check your inbox.";
+  }
+
+  public async forgotPasswordConfirm(token: string, password: string) {
+    if (!checkPasswordStrength(password)) {
+      const feedback = [];
+
+      if (password.length < 10) {
+        feedback.push("Password must be at least 10 characters long.");
+      }
+      if (!/\d/.test(password)) {
+        feedback.push("Password must include at least one number.");
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        feedback.push(
+          "Password must include at least one special character (e.g., !, @, #)."
+        );
+      }
+      const feedbackMessage = feedback.join(" ");
+
+      throw new BadRequestError(
+        feedbackMessage || "Password does not meet the required criteria."
+      );
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await userModel.findOne({
+      forgotPasswordToken: hashedToken,
+      forgotPasswordExpire: { $gt: Date.now() }, // Ensure token is not expired
+    });
+
+    if (!user) {
+      throw new BadRequestError("Invalid or expired password reset token.");
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.forgotPasswordToken = undefined;
+    user.forgotPasswordExpire = undefined;
+    await user.save();
+
+    return "Password has been reset successfully.";
   }
 }

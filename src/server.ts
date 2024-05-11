@@ -14,7 +14,7 @@ import { AppModule } from "_app/app.module";
 import { connectDB } from "_app/db";
 
 const server = express();
-const port = process.env.PORT || 5500;
+const port = process.env.PORT || 5000;
 dotenv.config();
 
 server.set("trust proxy", 1);

@@ -9,6 +9,6 @@ export interface IUser extends Document {
   role?: string[];
   refreshToken: string;
   forgotPasswordToken: string;
-  forgotPasswordExpire: Date;
+  forgotPasswordExpire: Date | number;
   omitPrivate(): any;
 }

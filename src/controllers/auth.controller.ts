@@ -69,4 +69,23 @@ export class AuthController {
       refreshToken,
     });
   }
+
+  public async forgotPassword(req: Request, res: Response) {
+    const { email } = req.body;
+    requiredField(req, res, ["email"]);
+
+    const message = await this.authService.forgotPassword(email);
+    res.status(StatusCodes.OK).json({ message });
+  }
+
+  public async forgotPasswordConfirm(req: Request, res: Response) {
+    const { token, password } = req.body;
+    requiredField(req, res, ["token", "password"]);
+
+    const message = await this.authService.forgotPasswordConfirm(
+      token,
+      password
+    );
+    res.status(StatusCodes.OK).json({ message });
+  }
 }
