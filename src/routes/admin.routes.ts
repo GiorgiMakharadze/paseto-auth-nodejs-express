@@ -6,13 +6,12 @@ import { Router } from "express";
 const router = Router();
 const adminController = new AdminController();
 
-router.get("/users", (req, res) => adminController.getAllUsers(req, res));
-router.get("/user/:id", (req, res) =>
-  adminController.getConcreteUser(req, res)
-);
+router.get("/users", adminController.getAllUsers.bind(adminController));
+router.get("/user/:id", adminController.getConcreteUser.bind(adminController));
 router.patch(
   "/make-user-admin/:id",
   userRoleValidation([ADMIN_ROLES.MAIN_ADMIN]),
-  (req, res) => adminController.makeUserAdmin(req, res)
+  adminController.makeUserAdmin.bind(adminController)
 );
+
 export default router;

@@ -6,12 +6,18 @@ import requiredField from "_app/utils/requiredField";
 import { BadRequestError, UnauthenticatedError } from "_app/errors";
 import { RegisterUserDto } from "_app/dtos/user.dto";
 import setCookies from "_app/utils/setCookies";
+import { generateToken } from "_app/utils/csrf";
 
 export class AuthController {
   private authService: AuthService;
 
   constructor() {
     this.authService = new AuthService();
+  }
+
+  public async generateCSRFtOken(req: Request, res: Response) {
+    const csrfToken = generateToken(req, res);
+    res.status(StatusCodes.OK).json({ csrfToken });
   }
 
   public async registerUser(req: Request, res: Response) {
