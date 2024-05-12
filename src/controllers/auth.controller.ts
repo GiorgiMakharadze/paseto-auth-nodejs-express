@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import { AuthService } from "_app/services/auth.service";
 import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import requiredField from "_app/utils/requiredField";
-import { BadRequestError } from "_app/errors";
+import { BadRequestError, UnauthenticatedError } from "_app/errors";
 import { RegisterUserDto } from "_app/dtos/user.dto";
 import { StatusCodes } from "http-status-codes";
+import setCookies from "_app/utils/setCookies";
 
 export class AuthController {
   private authService: AuthService;
@@ -87,5 +88,52 @@ export class AuthController {
       password
     );
     res.status(StatusCodes.OK).json({ message });
+  }
+
+  public async verifyToken(req: Request, res: Response) {
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!accessToken && !refreshToken) {
+      throw new UnauthenticatedError("No token provided");
+    }
+
+    const loggedInUser = await this.authService.verifyToken(
+      accessToken,
+      refreshToken
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Token is valid", loggedInUser });
+  }
+
+  public async logOut(req: Request, res: Response) {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      throw new BadRequestError("No refresh token provided");
+    }
+
+    const message = await this.authService.logOut(refreshToken);
+
+    res.clearCookie("accessToken", { secure: true, sameSite: "none" });
+    res.clearCookie("refreshToken", { secure: true, sameSite: "none" });
+
+    res.status(StatusCodes.OK).json({ msg: message });
+  }
+
+  public async refreshAccessToken(req: Request, res: Response) {
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      throw new UnauthenticatedError("No refresh token provided");
+    }
+
+    const { newAccessToken, newRefreshToken } =
+      await this.authService.refreshAccessToken(refreshToken);
+
+    setCookies(res, newAccessToken, newRefreshToken);
+
+    res.status(StatusCodes.OK).json({ message: "Access token refreshed" });
   }
 }

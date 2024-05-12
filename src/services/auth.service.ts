@@ -4,14 +4,16 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthenticatedError,
+  UnauthorizedError,
 } from "_app/errors";
 import userModel from "_app/models/user.model";
 import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import { privateKeyPEM } from "_app/utils/keyManager";
 import generateRefreshToken from "_app/utils/refreshToken";
 import sendEmail from "_app/utils/sendEmail";
-import * as bcrypt from "bcrypt";
-import * as crypto from "crypto";
+import { verifyAccessToken, verifyRefreshToken } from "_app/utils/verifyTokens";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { V4 as paseto } from "paseto";
 import validator from "validator";
 
@@ -138,5 +140,65 @@ export class AuthService {
     await user.save();
 
     return "Password has been reset successfully.";
+  }
+
+  public async verifyToken(accessToken: string, refreshToken: string) {
+    let payload = await verifyAccessToken(accessToken);
+
+    if (!payload && refreshToken) {
+      payload = await verifyRefreshToken(refreshToken);
+      if (!payload) {
+        throw new UnauthenticatedError("Invalid refresh token");
+      }
+    }
+
+    if (!payload) {
+      throw new UnauthenticatedError("No valid token provided");
+    }
+
+    const user = await userModel.findById(payload.id);
+    if (!user) {
+      throw new UnauthorizedError("Invalid token: user not found");
+    }
+
+    return user.omitPrivate();
+  }
+
+  public async logOut(refreshToken: string) {
+    if (!refreshToken) {
+      throw new BadRequestError("No refresh token provided");
+    }
+
+    const user = await userModel.findOne({ refreshToken });
+    if (user) {
+      user.refreshToken = null;
+      await user.save();
+    }
+
+    return "Successfully logged out";
+  }
+
+  public async refreshAccessToken(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthenticatedError("No refresh token provided");
+    }
+
+    const payload = await verifyRefreshToken(refreshToken);
+    if (!payload) {
+      throw new UnauthorizedError("Invalid or expired refresh token");
+    }
+
+    const user = await userModel.findById(payload.id);
+    if (!user || user.refreshToken !== refreshToken) {
+      throw new UnauthenticatedError("Invalid refresh token");
+    }
+
+    const newAccessToken = await paseto.sign(
+      { id: user._id, role: user.role },
+      privateKeyPEM
+    );
+    const newRefreshToken = await generateRefreshToken(user);
+
+    return { newAccessToken, newRefreshToken };
   }
 }

@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 import validator from "validator";
 
 import checkPasswordStrength from "_app/utils/checkPasswordStrength";

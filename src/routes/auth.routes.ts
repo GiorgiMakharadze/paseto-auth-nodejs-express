@@ -14,5 +14,10 @@ router.post("/forgot-password", (req, res) =>
 router.post("/forgot-password-confirm", (req, res) =>
   authController.forgotPasswordConfirm(req, res)
 );
+router.get("/verify-token", (req, res) => authController.verifyToken(req, res));
+router.post("/refresh-token", (req, res) =>
+  authController.refreshAccessToken(req, res)
+);
+router.post("/logout", (req, res) => authController.logOut(req, res));
 
 export default router;

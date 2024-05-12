@@ -1,10 +1,10 @@
-import * as express from "express";
-import * as dotenv from "dotenv";
-import * as cookieParser from "cookie-parser";
-import * as cors from "cors";
-import * as mongoSanitize from "express-mongo-sanitize";
-import * as compression from "compression";
-import * as morgan from "morgan";
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import mongoSanitize from "express-mongo-sanitize";
+import compression from "compression";
+import morgan from "morgan";
 import "express-async-errors";
 import helmet from "helmet";
 import { filterXSS } from "xss";

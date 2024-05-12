@@ -1,5 +1,5 @@
-import * as nodemailer from "nodemailer";
-import * as dotenv from "dotenv";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 import { SES, SendRawEmailCommand } from "@aws-sdk/client-ses";
 
 dotenv.config();
