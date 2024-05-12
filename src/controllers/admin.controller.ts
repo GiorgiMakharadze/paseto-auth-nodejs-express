@@ -20,4 +20,11 @@ export class AdminController {
     const user = await this.adminService.getConcreteUser(id);
     res.status(StatusCodes.OK).json(user);
   }
+
+  public async makeUserAdmin(req: IRequest, res: Response) {
+    const { id } = req.params;
+
+    const result = await this.adminService.makeUserAdmin(id);
+    res.status(StatusCodes.OK).json(result);
+  }
 }
