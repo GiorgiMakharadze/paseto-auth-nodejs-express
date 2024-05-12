@@ -3,3 +3,8 @@ export enum USER_ROLES {
   USER = "user",
   ADMIN = "admin",
 }
+
+export enum ADMIN_ROLES {
+  MAIN_ADMIN = "mainAdmin",
+  ADMIN = "admin",
+}

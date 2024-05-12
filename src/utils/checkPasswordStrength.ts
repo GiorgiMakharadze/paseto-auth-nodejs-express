@@ -1,5 +1,5 @@
 const checkPasswordStrength = (password: string): boolean => {
-  const minLength = 8;
+  const minLength = 10;
   const hasNumber = /\d/;
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
   return (

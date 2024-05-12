@@ -11,6 +11,7 @@ import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import { privateKeyPEM } from "_app/utils/keyManager";
 import generateRefreshToken from "_app/utils/refreshToken";
 import sendEmail from "_app/utils/sendEmail";
+import setCookies from "_app/utils/setCookies";
 import { verifyAccessToken, verifyRefreshToken } from "_app/utils/verifyTokens";
 import bcrypt from "bcrypt";
 import crypto from "crypto";

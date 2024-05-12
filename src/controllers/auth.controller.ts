@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { AuthService } from "_app/services/auth.service";
 import checkPasswordStrength from "_app/utils/checkPasswordStrength";
 import requiredField from "_app/utils/requiredField";
 import { BadRequestError, UnauthenticatedError } from "_app/errors";
 import { RegisterUserDto } from "_app/dtos/user.dto";
-import { StatusCodes } from "http-status-codes";
 import setCookies from "_app/utils/setCookies";
 
 export class AuthController {
@@ -63,6 +63,8 @@ export class AuthController {
       email,
       password
     );
+
+    setCookies(res, token, refreshToken);
 
     res.status(StatusCodes.OK).json({
       user,
