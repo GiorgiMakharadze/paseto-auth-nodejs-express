@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    environment:
+      - NODE_ENV=
+      - REDIS_URL=
+      - APP_ENV=
+      - PORT=
+      - MONGO_PATH=
+      - CSRF_SECRET=273b6709d3bca3f0dbe39892036a3b23e4749c4489c45329d48b2ddf722b33d6c1a6a607e1aac92e6596547d05374a18bb0e96afd5229c1df6460290b63ae9d8
+      - PRODUCTION_EMAIL_RECEIVER=
+      - DEVELOPMENT_EMAIL_RECEIVER=
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_REGION=
+    depends_on:
+      - redis
+      - mongodb
+
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  mongodb:
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  redis_data:
+  mongo_data:

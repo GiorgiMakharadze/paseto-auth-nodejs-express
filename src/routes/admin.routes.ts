@@ -8,6 +8,11 @@ const adminController = new AdminController();
 
 router.get('/users', adminController.getAllUsers.bind(adminController));
 router.get('/user/:id', adminController.getConcreteUser.bind(adminController));
+router.delete(
+  '/user/:id',
+  userRoleValidation([ADMIN_ROLES.MAIN_ADMIN]),
+  adminController.deleteUser.bind(adminController)
+);
 router.patch(
   '/make-user-admin/:id',
   userRoleValidation([ADMIN_ROLES.MAIN_ADMIN]),

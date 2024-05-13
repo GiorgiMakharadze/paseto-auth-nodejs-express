@@ -31,7 +31,9 @@ export class AdminService {
       if (cachedData) return cachedData;
 
       return userModel.findOne(query).then((user) => {
-        if (!user) throw new NotFoundError('User not found');
+        if (!user) {
+          throw new NotFoundError('User not found');
+        }
         clearCache(cacheKey);
         return user;
       });
@@ -61,5 +63,17 @@ export class AdminService {
     clearCache('all_users');
 
     return { msg: 'User has been made admin' };
+  }
+
+  public async deleteUser(userId: string) {
+    const user = await userModel.findByIdAndDelete(userId);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    clearCache(`user_${userId}`);
+    clearCache('all_users');
+
+    return { message: 'User deleted successfully' };
   }
 }

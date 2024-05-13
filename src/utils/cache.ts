@@ -2,7 +2,7 @@ import { IQueryWithCache } from '_app/interfaces';
 import mongoose, { Document, Model } from 'mongoose';
 import { createClient } from 'redis';
 
-const redisUrl = 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL!;
 
 const redisClient = createClient({
   url: redisUrl,

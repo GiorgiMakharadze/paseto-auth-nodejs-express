@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import { SES, SendRawEmailCommand } from '@aws-sdk/client-ses';
+import { IMailOptions } from '_app/interfaces';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ const ses = new SES({
 });
 
 const emailReceiver =
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'prod'
     ? process.env.PRODUCTION_EMAIL_RECEIVER
     : process.env.DEVELOPMENT_EMAIL_RECEIVER;
 
@@ -35,19 +36,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-interface MailOptions {
-  to: string | undefined;
-  subject: string;
-  text: string;
-  html?: string;
-}
-
 const sendEmail = async ({
   to = emailReceiver,
   subject,
   text,
   html,
-}: MailOptions): Promise<void> => {
+}: IMailOptions): Promise<void> => {
   try {
     const info = await transporter.sendMail({
       from: emailReceiver,

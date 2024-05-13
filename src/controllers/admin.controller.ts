@@ -27,4 +27,10 @@ export class AdminController {
     const result = await this.adminService.makeUserAdmin(id);
     res.status(StatusCodes.OK).json(result);
   }
+
+  public async deleteUser(req: IRequest, res: Response) {
+    const { id } = req.params;
+    const result = await this.adminService.deleteUser(id);
+    res.status(StatusCodes.OK).json(result);
+  }
 }
