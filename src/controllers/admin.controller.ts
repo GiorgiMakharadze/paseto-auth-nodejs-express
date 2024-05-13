@@ -1,7 +1,7 @@
-import { IRequest } from "_app/interfaces/request.interface";
-import { AdminService } from "_app/services/admin.service";
-import { Response } from "express";
-import { StatusCodes } from "http-status-codes";
+import { IRequest } from '_app/interfaces/request.interface';
+import { AdminService } from '_app/services/admin.service';
+import { Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 export class AdminController {
   private adminService: AdminService;

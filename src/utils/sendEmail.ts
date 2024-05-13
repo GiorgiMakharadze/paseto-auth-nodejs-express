@@ -1,6 +1,6 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-import { SES, SendRawEmailCommand } from "@aws-sdk/client-ses";
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+import { SES, SendRawEmailCommand } from '@aws-sdk/client-ses';
 
 dotenv.config();
 
@@ -15,8 +15,8 @@ const env: Env = {
 };
 
 const ses = new SES({
-  apiVersion: "2010-12-01",
-  region: "us-east-1",
+  apiVersion: '2010-12-01',
+  region: 'us-east-1',
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
@@ -24,7 +24,7 @@ const ses = new SES({
 });
 
 const emailReceiver =
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === 'production'
     ? process.env.PRODUCTION_EMAIL_RECEIVER
     : process.env.DEVELOPMENT_EMAIL_RECEIVER;
 
@@ -57,9 +57,9 @@ const sendEmail = async ({
       html,
     });
 
-    console.log("Email sent:", info.messageId);
+    console.log('Email sent:', info.messageId);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error('Error sending email:', error);
   }
 };
 

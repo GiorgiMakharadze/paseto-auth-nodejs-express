@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 const errorHandlerMiddleware = (
   err: Error | any,
@@ -11,13 +11,13 @@ const errorHandlerMiddleware = (
 
   const defaultError = {
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
-    msg: err.message || "Something went wrong",
+    msg: err.message || 'Something went wrong',
   };
-  if (err.name === "ValidationError") {
+  if (err.name === 'ValidationError') {
     defaultError.statusCode === StatusCodes.BAD_REQUEST;
     defaultError.msg = Object.values(err.errors)
       .map((item: any) => item.message)
-      .join(",");
+      .join(',');
   }
   if (err.code && err.code === 11000) {
     defaultError.statusCode === StatusCodes.BAD_REQUEST;
