@@ -1,18 +1,26 @@
-# Build Stage
-FROM node:18 AS builder
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN yarn install
-COPY src ./src
-COPY tsconfig.json ./
-RUN yarn run build
+# Build stage
+FROM node:18-alpine AS build
 
-# Run Stage
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn install
+
+COPY . .
+RUN yarn build
+
+# Run stage
 FROM node:18-alpine
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/build ./build
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package*.json ./
+
+WORKDIR /app
+
+COPY --from=build /app/build ./build
+COPY --from=build /app/package.json ./
+COPY --from=build /app/yarn.lock ./
+RUN yarn install
+
+COPY --from=build /app/src/keys ./keys
 
 EXPOSE 8000
-CMD [ "yarn", "run", "prod" ]
+
+CMD ["node", "./build/server.js"]

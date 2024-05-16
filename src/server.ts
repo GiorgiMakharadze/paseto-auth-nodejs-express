@@ -36,14 +36,13 @@ server.use(
   })
 );
 
+server.use(doubleCsrfProtection);
 server.use((req, res, next) => {
   if (req.body) {
     req.body = JSON.parse(filterXSS(JSON.stringify(req.body)));
   }
   next();
 });
-
-// server.use(doubleCsrfProtection);
 
 AppModule(server);
 
