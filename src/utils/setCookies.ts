@@ -4,20 +4,20 @@ import ms from 'ms';
 const setCookies = (res: Response, accessToken: string, refreshToken: string) => {
   const isProduction = process.env.NODE_ENV === 'prod';
 
-  const accessTokenExpiry = isProduction ? ms('15m') : ms('1h');
-  const refreshTokenExpiry = isProduction ? ms('7d') : ms('14d');
+  const accessTokenExpiry = ms('15m');
+  const refreshTokenExpiry = ms('7d');
 
   res.cookie('accessToken', accessToken, {
     expires: new Date(Date.now() + accessTokenExpiry),
-    secure: true,
-    sameSite: 'none',
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
     httpOnly: true,
   });
 
   res.cookie('refreshToken', refreshToken, {
     expires: new Date(Date.now() + refreshTokenExpiry),
-    secure: true,
-    sameSite: 'none',
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
     httpOnly: true,
   });
 };

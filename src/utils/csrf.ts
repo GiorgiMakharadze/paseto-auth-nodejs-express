@@ -5,9 +5,9 @@ export const { doubleCsrfProtection, generateToken, invalidCsrfTokenError } = do
   getSecret: () => process.env.CSRF_SECRET!,
   cookieName: '__Host-csrf-token',
   cookieOptions: {
-    sameSite: 'none', // Adjust based on your needs
+    sameSite: 'strict',
     path: '/',
-    secure: process.env.NODE_ENV === 'prod', // true in production
+    secure: process.env.NODE_ENV === 'prod',
   },
   getTokenFromRequest: (req: Request) => {
     const csrfToken = req.headers['x-csrf-token'];

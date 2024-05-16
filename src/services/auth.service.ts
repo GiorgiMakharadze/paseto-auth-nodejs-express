@@ -118,7 +118,7 @@ export class AuthService {
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
     const user = await userModel.findOne({
       forgotPasswordToken: hashedToken,
-      forgotPasswordExpire: { $gt: Date.now() }, // Ensure token is not expired
+      forgotPasswordExpire: { $gt: Date.now() },
     });
 
     if (!user) {
