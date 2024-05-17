@@ -29,7 +29,7 @@ server.use(compression());
 server.use(morgan('dev'));
 server.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: true,
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
@@ -43,6 +43,8 @@ server.use((req, res, next) => {
   }
   next();
 });
+
+server.use(express.static('../public'));
 
 AppModule(server);
 

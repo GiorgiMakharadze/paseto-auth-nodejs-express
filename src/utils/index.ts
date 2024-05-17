@@ -9,3 +9,4 @@ export * from './setCookies';
 export * from './getEnumValues';
 export * from './csrf';
 export * from './cache';
+export * from './rateLimiterKeyGenerator';
